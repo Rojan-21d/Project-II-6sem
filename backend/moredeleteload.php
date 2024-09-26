@@ -42,6 +42,38 @@ function showAlert($message, $type = 'error') {
     </script>";
 }
 
+// Function to display ratings
+function displayRating($rating, $numReviews) {
+    // Calculate the number of full, half, and empty stars
+    $fullStars = floor($rating); // Full stars
+    $halfStars = ($rating - $fullStars) >= 0.5 ? 1 : 0; // Half star
+    $emptyStars = 5 - $fullStars - $halfStars; // Empty stars
+
+    // Start output
+    $output = '<div style="text-align: center;">';
+
+    // Output full stars
+    for ($i = 0; $i < $fullStars; $i++) {
+        $output .= '<i class="fa-solid fa-star" style="color: gold;"></i>';
+    }
+
+    // Output half star
+    if ($halfStars) {
+        $output .= '<i class="fa-solid fa-star-half-stroke" style="color: gold;"></i>';
+    }
+
+    // Output empty stars
+    for ($i = 0; $i < $emptyStars; $i++) {
+        $output .= '<i class="fa-regular fa-star" style="color: gold;"></i>';
+    }
+
+    // Display number of reviews
+    $output .= '<small> (' . $numReviews . ' reviews)</small>';
+    $output .= '</div>';
+
+    return $output;
+}
+
 if (isset($_POST['action']) && isset($_POST['id'])) {
     $id = $_POST['id'];
     $_SESSION['load_id'] = $id;
@@ -190,8 +222,26 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                         echo "No booking information available.";
                     } else {
                         // Displaying
+                        // Fetch consignor rating
+                        $sql_consignor_rating = "SELECT AVG(rating) AS avg_rating, COUNT(*) AS num_reviews 
+                        FROM reviews 
+                        WHERE shipment_id IN (SELECT id FROM shipment WHERE consignor_id = (SELECT consignor_id FROM loaddetails WHERE id = ?))";
+
+                        $stmt = $conn->prepare($sql_consignor_rating);
+                        $stmt->bind_param("i", $id);
+                        $stmt->execute();
+                        $result_consignor = $stmt->get_result();
+                        $consignor_rating = $result_consignor->fetch_assoc();
+                        $loadrow['consignor_rating'] = $consignor_rating['avg_rating'] ?? 0;
+                        $loadrow['num_reviews'] = $consignor_rating['num_reviews'] ?? 0;
+
                         echo '<ul>';
                         echo '<li style="text-align:center" important><img src="../'. $rowShip["img_srcs"]. '" style="height: 85px; width: auto;"></li>';
+                        ?>
+                        <li>
+                        <?php echo displayRating($loadrow['consignor_rating'], $loadrow['num_reviews']); ?>
+                        </li>
+                        <?php
                         echo '<li>Name: '. $rowShip["name"]. '</li>';
                         echo '<li>Email: '. $rowShip["email"]. '</li>';
                         echo '<li>Address: '. $rowShip["address"]. '</li>';
@@ -262,8 +312,26 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                         echo "No booking information available.";
                     } else {
                         // Displaying
+                        // Fetch carrier rating
+                        $sql_carrier_rating = "SELECT AVG(rating) AS avg_rating, COUNT(*) AS num_reviews 
+                        FROM reviews 
+                        WHERE shipment_id IN (SELECT id FROM shipment WHERE carrier_id = (SELECT carrier_id FROM loaddetails WHERE id = ?))";
+
+                        $stmt = $conn->prepare($sql_carrier_rating);
+                        $stmt->bind_param("i", $id);
+                        $stmt->execute();
+                        $result_carrier = $stmt->get_result();
+                        $carrier_rating = $result_carrier->fetch_assoc();
+                        $loadrow['carrier_rating'] = $carrier_rating['avg_rating'] ?? 0;
+                        $loadrow['num_reviews'] = $carrier_rating['num_reviews'] ?? 0;
+
                         echo '<ul>';
                         echo '<li style="text-align:center" important><img src="../'. $rowShip["img_srcs"]. '" style="height: 85px; width: auto;"></li>';
+                        ?>
+                        <li>
+                        <?php echo displayRating($loadrow['carrier_rating'], $loadrow['num_reviews']); ?>
+                        </li>
+                        <?php
                         echo '<li>Name: '. $rowShip["name"]. '</li>';
                         echo '<li>Email: '. $rowShip["email"]. '</li>';
                         echo '<li>Address: '. $rowShip["address"]. '</li>';
@@ -332,19 +400,35 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
 }
 
 
-
 if (isset($_POST['submitReview'])) {
     $shipmentId = $_POST['shipment_id'];
     $rating = $_POST['rating'];
     $review = $_POST['review'];
 
-    //getting extra data like loadId, carrierId and consignorId
-    
-    $stmt = $conn->prepare("INSERT INTO reviews (shipment_id, reviewer_type, rating, review) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("isss", $shipmentId, $_SESSION['usertype'], $rating, $review);
-    $stmt->execute();
-    $stmt->close();
+    // Validate input
+    if (empty($shipmentId) || empty($rating) || empty($review)) {
+        showAlert("All fields are required.", "error");
+    } else {
+        // Prepare SQL statement
+        $stmt = $conn->prepare("INSERT INTO reviews (shipment_id, reviewer_type, rating, review) VALUES (?, ?, ?, ?)");
+        
+        // Bind parameters
+        $stmt->bind_param("isss", $shipmentId, $_SESSION['usertype'], $rating, $review);
+
+        // Execute SQL statement
+        if ($stmt->execute()) {
+            // Show success alert
+            showAlert("Your review has been submitted.", "success");
+        } else {
+            // Show error alert
+            showAlert("There was an error submitting your review.", "error");
+        }
+        
+        // Close SQL statement
+        $stmt->close();
+    }
 }
+
 
 include '../layout/footer.php';
 ?>
