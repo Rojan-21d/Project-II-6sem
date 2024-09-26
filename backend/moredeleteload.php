@@ -84,6 +84,11 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
         try {        
             $sql = "UPDATE loaddetails SET status = 'delivered' WHERE id = '$id'";        
             $conn->query($sql);
+            
+            // Add this line to update delivered_time in the shipment table
+            $sql2 = "UPDATE shipment SET delivered_time = NOW() WHERE load_id = '$id'";
+            $conn->query($sql2);
+    
             showAlert("Load Delivered Marked.", "success");
             exit;
         } catch (\Throwable $th) {
@@ -91,7 +96,8 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
             showAlert("ERROR! ' . $th . '", "error");
             exit();
         }    
-    } elseif ($action == 'more') {
+    }
+    elseif ($action == 'more') {
         // More of the row
         $sql = "SELECT * FROM loaddetails WHERE id = '$id'";
         $result = $conn->query($sql);
@@ -121,6 +127,40 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                     <li>Distance: <?php echo $more['distance']; ?> Km</li>
                     <li>Weight: <?php echo $more['weight']; ?> Ton</li>
                     <li>Description: <?php echo $more['description']; ?></li>
+                    <li>Sceduled by: <?php echo $more['scheduled_time']; ?></li>
+                    <?php
+                    // Fetch delivered time if the load is delivered
+                    if ($stat === 'delivered') {
+                        // Query to get delivered_time from shipment table
+                        $sql2 = "SELECT delivered_time FROM shipment WHERE load_id = '$id'";
+                        $result2 = $conn->query($sql2);
+                        if ($result2 && $result2->num_rows > 0) {
+                            $row2 = $result2->fetch_assoc();
+                            $delivered_time = $row2['delivered_time'];
+
+                            echo "<li>Delivered Time: " . $delivered_time . "</li>";
+
+                            // Calculate the difference between scheduled_time and delivered_time
+                            $scheduled_time = new DateTime($more['scheduled_time']);
+                            $delivered_time_dt = new DateTime($delivered_time);
+                            
+                            $interval = $scheduled_time->diff($delivered_time_dt);
+                            $days = $interval->days;
+                            $hours = $interval->h;
+                            
+                            if ($days === 0 && $hours === 0) {
+                                // Delivery is on time (same day)
+                                echo "<li>Delivery was on time.</li>";
+                            } else {
+                                // Determine if delivery was ahead of or late by the scheduled time
+                                $aheadOrLate = ($interval->invert == 1) ? "ahead of" : "late by";
+                                echo "<li>Delivery was $aheadOrLate $days days and $hours hours</li>";
+                            }
+                            
+                        }
+                    }
+
+                    ?>
                 </ul>
             </div>
             
@@ -173,7 +213,10 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                             <button type='submit'>Delivered</button>
                         </form>
                     </div>";
-                } else echo "Delivered";
+                } else {
+                    echo "Delivered";
+                    // code to give rating and review for consignor
+                }
                 echo "</div>";
             } elseif($_SESSION['usertype'] == "consignor"){
                 echo "
@@ -213,6 +256,8 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                             <input type='hidden' name='shipment_id' value='" . $row['id'] . "'> <!--passing shipment id-->
                             <button type='submit' name='cancel'>Cancel</button>
                         </form>";
+                        } else{
+                            // code to give rating and review for consignor
                         }
                     echo "</div>";
                     }

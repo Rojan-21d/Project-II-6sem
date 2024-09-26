@@ -1,0 +1,56 @@
+.review-section {
+    border: 1px solid #ddd; /* Border around the review section */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px; /* Padding inside the section */
+    margin: 20px 0; /* Margin above and below the section */
+    background-color: #f9f9f9; /* Light background color */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow effect */
+}
+
+.review-section h3 {
+    margin-bottom: 15px; /* Space below the heading */
+    color: #333; /* Darker text color for the heading */
+}
+
+.review-form {
+    display: flex; /* Flexbox for better alignment */
+    flex-direction: column; /* Vertical layout */
+}
+
+.rating {
+    margin-bottom: 15px; /* Space below the rating section */
+}
+
+.rating label {
+    font-weight: bold; /* Bold label for rating */
+}
+
+.review {
+    margin-bottom: 15px; /* Space below the review textarea */
+}
+
+.review label {
+    font-weight: bold; /* Bold label for review textarea */
+}
+
+textarea {
+    width: 100%; /* Full width for the textarea */
+    padding: 10px; /* Padding inside the textarea */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+    resize: vertical; /* Allow vertical resizing */
+}
+
+button {
+    background-color: #007bff; /* Blue background color */
+    color: white; /* White text */
+    padding: 10px; /* Padding inside the button */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}

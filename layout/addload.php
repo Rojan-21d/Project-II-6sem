@@ -6,6 +6,7 @@
     <script src="../js/sweetalert.js"></script>
     <link rel="stylesheet" href="../css/addtable.css">
     <link rel="stylesheet" href="../css/sweetAlert.css">
+    <link rel="stylesheet" href="../css/submit_review.css">    
     <title>Add Load</title>
 </head>
 <body>
@@ -34,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $distance = $_POST['distance'];
     $description = $_POST['description'];
     $weight = $_POST['weight'];
+    $scheduled_time = $_POST['scheduled_time'];
 
     // Validate form fields
     $errors = [];
@@ -56,6 +58,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($weight) || !is_numeric($weight)) {
         $errors[] = "Weight must be a numeric value.";
+    }
+    // Validate the scheduled_time field
+    $scheduled_time = $_POST['scheduled_time'];
+
+    // Validate the scheduled_time field
+    if (empty($scheduled_time)) {
+        $errors[] = "Scheduled time is required.";
+    } else {
+        $current_time = date('Y-m-d\TH:i'); // Current date and time in the same format as datetime-local input
+        if ($scheduled_time < $current_time) {
+            $errors[] = "Scheduled time cannot be in the past.";
+        }
     }
     
     // Correct the file input name from 'image' to 'load_pic'
@@ -94,9 +108,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
         // Insert the data into the database
-        $sql = "INSERT INTO loaddetails (name, origin, destination, distance, description, weight, status, consignor_id, img_srcs)
-                        VALUES ('$name', '$origin', '$destination', '$distance', '$description', '$weight', 'notBooked', '{$_SESSION['id']}', '$uploaded_file_path')";
+        $sql = "INSERT INTO loaddetails (name, origin, destination, distance, description, weight, status, consignor_id, img_srcs, scheduled_time)
+        VALUES ('$name', '$origin', '$destination', '$distance', '$description', '$weight', 'notBooked', '{$_SESSION['id']}', '$uploaded_file_path', '$scheduled_time')";
         $result = $conn->query($sql);
+
 
         if ($result) {
             // Redirect to the success page
@@ -161,6 +176,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="weight">Weight (Tons):</label>
             <input type="number" id="weight" name="weight">
         </div>
+        <div class="data-input">
+            <label for="scheduled_time">Scheduled Time:</label>
+            <input type="datetime-local" id="scheduled_time" name="scheduled_time" min="">
+        </div>
+
+
         <div class="data-input center">
             <label for="load_pic">Image:</label>
             <input class="inpImg" type="file" id="load_pic" name="load_pic" accept="image/*" placeholder="Image">
@@ -172,6 +193,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="../"><button type="button">Home</button></a>
         </form>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get today's date in YYYY-MM-DDTHH:MM format (for datetime-local input)
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = ('0' + (now.getMonth() + 1)).slice(-2); // Month in MM format
+        const day = ('0' + now.getDate()).slice(-2); // Day in DD format
+        const hours = ('0' + now.getHours()).slice(-2); // Hours in HH format
+        const minutes = ('0' + now.getMinutes()).slice(-2); // Minutes in MM format
+
+        // Set the min attribute to the current date and time
+        const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        document.getElementById('scheduled_time').setAttribute('min', minDateTime);
+    });
+</script>
 </body>
 </html>
 
