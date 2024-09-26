@@ -1,0 +1,280 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+}
+.main-content{
+    margin: 0 auto;
+    width: 100%;
+    background-color: #292929;
+    padding: 13px 20%;
+}
+
+.post-container{
+    width: 100%;
+    min-height: max-content;
+    background: #333333;
+    border-radius: 6px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 44px rgba(8, 7, 16, .6);
+} 
+
+.content-detail {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 10px 5px;
+    gap: 5%;
+}
+
+
+.content-image img {
+    height: 20rem;
+    border-radius: 14px;
+    max-width: 30rem;
+    width: 100%;
+    object-fit: cover;
+}
+
+
+.content-description{
+    max-width: 15rem;
+    width: 100%;
+    text-align: left;
+}
+
+.content-description h3{
+    padding: 15px;
+}
+
+.content-description li{
+    padding: 5px;
+    list-style: none;
+}
+
+.activity-icon{
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.post-container hr{
+    border: 0;
+    height: 1px;
+    background: #858585;
+    margin: 15px 0 10px;
+}
+
+.activity-icon button{
+    background: transparent;
+    border: 1px solid grey;
+    outline: 0;
+    height: 40px;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    transition: .4s;
+    min-width: 400px;
+}
+
+
+.activity-icon button:hover{
+    transform: scale(1.02);
+    background-color: #01896e;
+}
+
+
+/* Consignor-main */
+html, body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #292929;
+    color: #b7b7b7;
+}
+.congmain {
+    margin: 0 auto ;
+    width: 100% ;
+    padding: 5px 10% ;  
+    display: flex;
+    flex-direction: column;
+}
+
+
+.addForm{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.addForm button {
+    padding: 0.5rem 2rem;
+    box-sizing: border-box;
+    border: 0;
+    outline: 0;
+    border-radius: 10px;
+    background-color: #01896e;
+
+}
+
+.addForm button:hover{
+    background-color: #0e6553;
+}
+
+.table-container{
+    flex: 1;
+    border-radius: 10px;
+    background: #333333;
+    box-shadow: 0 0 44px rgba(8, 7, 16, .6);
+    overflow: hidden;
+    margin: 10px 0;
+    padding: 5px;
+    text-align: center;
+}
+
+
+.congmain table{
+    width: 95%;
+    border-collapse: collapse;
+    margin: 0.8rem auto;
+}
+
+th{
+    padding: 0.8rem 1rem;
+    background-color: #01896e;
+}
+
+th{
+    padding: .75rem .9375rem;
+}
+
+.td-center{
+    display: flex;
+    justify-content: center;
+    gap: 4%;
+}
+
+
+.td-center button{
+    color: rgb(0, 0, 0);
+    border: 0;
+    padding: 0.3125rem 0.4375rem;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: .525rem;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    width: 5rem;
+}
+
+  
+.moreBtn button{
+    background-color: rgb(3, 245, 3);
+}
+/* Change background color on hover */
+.moreBtn button:hover{
+    background-color: rgba(0, 110, 0, 0.771);
+}
+  
+.deleteBtn button,
+.cancelBtn button {
+    background-color: rgb(254, 65, 65);
+}
+
+/* Change background color on hover */
+.deleteBtn button:hover,
+.cancelBtn button:hover {
+    background-color: rgb(186, 4, 4); /* Red color */
+}
+
+
+td img{
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-right: .5rem;
+    margin-left: .5rem;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+td{
+    padding: .5rem;
+}
+
+/* Zebra pattern */
+table  tr:nth-child(odd){
+    background:#3d3d3d;
+}
+
+table tr:hover{
+    transform: scale(1.02);
+}
+
+.status{
+    padding: .4rem 0;
+    border-radius: 2rem;
+}
+
+.status.delivered{
+    background-color: green;
+} 
+.status.notBooked{
+    background-color: whitesmoke;
+} 
+.status.booked{
+    background-color: yellow;
+} 
+
+/* moredetailsconsignor */
+.more{
+    margin: 2% 5%;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.headdetails{
+    margin: 2rem;
+    text-align: center;
+    color: #01896e;
+}
+
+.backBtn{
+    margin-top: 1.6rem;
+    text-align: right;
+}
+
+.backBtn button{
+    padding: .6rem 1rem;
+    margin-right: 9rem;
+    border: none;
+    background: #04b18f;
+    border-radius: 5px;
+}
+.backBtn button:hover{
+    background-color: #01896e;
+}
+
+.more-img{
+    height: 20rem;
+    border-radius: 14px;
+    max-width: 30rem;
+    width: 100%;
+    object-fit: cover;
+}
+
+.description-more{
+    text-align: center;
+    padding: 1.5rem;
+    border-right: 1px solid white;
+}
+
+.more h3{
+    padding: 20px;
+}
+
+.description-more li{
+    padding: 5px;
+    list-style: none;
+}
+

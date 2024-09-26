@@ -1,0 +1,232 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #333333;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-box {
+    width: 80%; /* Reduced width to create more space */
+    max-width: 900px;
+    padding: 15px 40px 30px; /* Reduced padding for a tighter layout */
+    text-align: center;
+    border-radius: 10px;
+    background: #333333;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 44px rgba(8, 7, 16, 0.6);
+    margin: 20px;
+}
+
+.topic h1 {
+    font-size: 28px; /* Reduced font size for a tighter layout */
+    margin-bottom: 8px; /* Reduced margin for less spacing */
+    color: #01896e;
+    position: relative;
+}
+
+.content {
+    display: flex;
+    flex-wrap: wrap; /* To wrap the input groups */
+    justify-content: space-between; /* To create spacing between logo and inputs */
+}
+
+.logo-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px; /* Added margin for space between logo and inputs */
+}
+
+.logo-img { /* Increased size for a bigger image */
+    max-width: fit-content;
+    width: auto;
+    max-height: 130px; /* Increased size for a bigger image */
+}
+
+.input-section {
+    flex: 2;
+    width: 100%;
+    max-width: 400px; /* Limited max-width to avoid excessive spacing */
+    margin-top: 20px; /* Added margin for space between logo and inputs */
+}
+
+.input-group {
+    background: #7dcabb;
+    margin: 15px 0;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.input-group .input-field {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center; 
+}
+
+.input-group .input-field input {
+    border-radius: 13px;
+    max-height: 3.2rem;
+    width: 100%; /* Adjusted width to take up full space */
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 18px 15px;
+    padding-left: 40px;
+}
+
+.input-group .input-field i.left {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: #5a5252;
+}
+
+.input-group .input-field i.fa-eye {
+    position: absolute;
+    top: 50%;
+    right: 15px; /* Positioned on the right side */
+    transform: translateY(-50%);
+    color: #5a5252;
+    cursor: pointer;
+}
+
+
+/* Added new style for Contact and Address input fields */
+.input-group .input-field:nth-child(4),
+.input-group .input-field:nth-child(5) {
+    margin-top: 10px;
+}
+
+.user-selects {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.user-selects .input-field {
+    display: flex;
+    align-items: center;
+}
+
+.user-selects input[type="radio"] {
+    display: none;
+    margin-right: 5px;
+}
+
+.user-selects label {
+    border-radius: 5px;
+    padding: 10px 40px;
+    color: #01896e;
+    width: 100%;
+    border: 2px solid #01896e;
+    transition: background 0.5s;
+}
+
+.user-selects label:hover {
+    color: #fff;
+    background-color: #01896e;
+    transform: scale(1.03);
+}
+
+.user-selects input[type="radio"]:checked + label {
+    background-color: #01896e;
+    border-color: #01896e;
+    color: #fff;
+}
+
+.btn-field {
+    width: 100%;
+    display: grid;
+}
+
+.btn-field button {
+    flex-basis: 100%;
+    margin: 15px 0;
+    padding: 14px 20px;
+    border-radius: 15px;
+    text-align: center;
+    background-color: #01896e;
+    color: #fff;
+    border: none;
+    outline: 0;
+    cursor: pointer; /* Added cursor pointer for better interaction */
+}
+
+.btn-field button:hover {
+    transform: scale(1.03);
+}
+
+.last {
+    margin-top: 20px;
+}
+
+.last small {
+    font-size: 14px;
+    color: #01896e;
+    text-decoration: none;
+}
+
+.last small a {
+    color: #01896e;
+    text-decoration: underline;
+}
+
+.last small a:hover {
+    color: #01896e;
+    text-decoration: none;
+}
+
+@media only screen and (max-width: 600px) {
+    .form-box {
+        width: 100%;
+        max-width: 100%;
+        border: none;
+        box-shadow: none;
+    }
+
+    .content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logo-section {
+        margin-bottom: 20px;
+    }
+
+    .input-section {
+        padding: 0;
+        margin-top: 0;
+    }
+
+    .logo-img {
+        max-width: 130px; /* Reduced size for smaller screens */
+        max-height: 130px; /* Reduced size for smaller screens */
+    }
+}
+.middle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Reduced margin for less spacing */
+}
+
+.last a {
+    text-decoration: none;
+    color: #01896e;
+}

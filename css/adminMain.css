@@ -1,0 +1,107 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+}
+
+.admin-main{
+    margin: 0 auto;
+    width: 100%;
+    background-color: #292929;
+    padding: 13px 7%;
+    height: 100vh;
+    min-height: max-content;
+    color: #fff;
+}
+
+.table-container{
+    flex: 1;
+    border-radius: 10px;
+    background: #333333;
+    box-shadow: 0 0 44px rgba(8, 7, 16, .6);
+    overflow: hidden;
+    margin: 10px 0;
+    padding: 5px;
+    text-align: center;
+}
+
+table{
+    width: 95%;
+    border-collapse: collapse;
+    margin: 0.8rem auto;
+}
+
+th{
+    padding: 0.8rem 1rem;
+    background-color: #01896e;
+}
+
+h2, th{
+    padding: .75rem .9375rem;
+}
+
+td{
+    padding: .5rem;
+}
+
+.td-center button{
+    color: rgb(0, 0, 0);
+    border: 0;
+    padding: 0.3125rem 0.4375rem;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: .625rem;
+}
+  
+.moreBtn button:hover{
+    background-color: rgb(3, 245, 3);
+}
+  
+.deleteBtn button:hover {
+    background-color: rgb(254, 65, 65);
+}
+
+/* Zebra pattern */
+table  tr:nth-child(odd){
+    background:#3d3d3d;
+}
+
+table tr:hover{
+    transform: scale(1.02);
+}
+
+
+.head-table{
+    text-align: center;
+    margin: auto .5rem;
+    column-gap: 2%;
+    display: flex;
+    justify-content: center;
+}
+
+.head-table button{
+    padding: .5rem;
+    border-radius: 10px;
+    border: none;
+}
+
+.head-table button:hover{
+    transform: scale(1.05);
+
+}
+
+.admin-main .head-table button.selected {
+    background-color: #01896e;
+    color: white;
+  }
+
+
+.imgsrc{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+
+

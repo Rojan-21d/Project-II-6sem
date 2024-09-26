@@ -1,0 +1,111 @@
+*{
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
+}
+body{
+  background-color: #292929;
+}
+.add-main {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 20px;
+  background: #333333;
+  border: 2px solid rgba(255, 255, 255, .1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 44px rgba(8, 7, 16, .6);
+  border-radius: 13px;
+}
+
+  
+h1{
+  text-align: center;
+  margin-top: 3.5rem;
+  color: #ffffff;
+}
+h2 {
+  color: #ffffff;
+  text-align: center;
+  margin: .3rem;
+}
+  
+.addForm {
+  padding: .9rem;
+  border-radius: 15px;
+  min-width: 400PX;
+}
+  
+label {
+  color: #ffffff;
+  flex-basis: 30%;
+}
+  
+  
+.data-input{    
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+}
+
+input{
+  flex-basis: 70%;
+  padding: .8rem;
+  border: none;
+  outline: none;
+  border-radius: 13px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.inpImg{
+  text-align: center;
+  width: 100%;
+}
+
+button{
+  border-radius: 13px;
+  border: none;
+  outline: none;
+  background-color: #01896e;
+  width: 100%;
+  padding: .9rem;
+  margin: .3rem 0;
+}
+
+button:hover{
+  transform: scale(1.03);
+}
+
+.button-input a{
+  text-decoration: none;
+}
+
+/* CSS for error message */
+.error-message {
+  background-color: #474846;
+  color: #a94442;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #292929;
+  border-radius: 4px;
+}
+
+.image-upload {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.image-upload img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+
+.image-upload button{
+  width: 10%;
+  height: 5%;
+}
