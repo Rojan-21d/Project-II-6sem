@@ -156,6 +156,7 @@ $result = $conn->query($sql);
                         <hr>
                         <div class="activity-icon booked">
                             <form action="backend/booking.php" method="post">
+                                <input type="hidden" name="action" value="book"> <!-- Add this line -->
                                 <!-- Pass load ID, carrier ID, and consignor ID for booking -->
                                 <input type="hidden" name="load_id" value="' . $loadrow['id'] . '">
                                 <input type="hidden" name="carrier_id" value="' . $carrier_id . '">
