@@ -1,56 +1,89 @@
-.review-section {
-    border: 1px solid #ddd; /* Border around the review section */
-    border-radius: 8px; /* Rounded corners */
-    padding: 20px; /* Padding inside the section */
-    margin: 20px 0; /* Margin above and below the section */
-    background-color: #f9f9f9; /* Light background color */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow effect */
+/* Star Rating Container */
+#star-rating {
+    display: flex;
+    justify-content: center;
+    margin: 5px 0;
 }
 
-.review-section h3 {
-    margin-bottom: 15px; /* Space below the heading */
-    color: #333; /* Darker text color for the heading */
-}
-
-.review-form {
-    display: flex; /* Flexbox for better alignment */
-    flex-direction: column; /* Vertical layout */
-}
-
-.rating {
-    margin-bottom: 15px; /* Space below the rating section */
-}
-
-.rating label {
-    font-weight: bold; /* Bold label for rating */
-}
-
-.review {
-    margin-bottom: 15px; /* Space below the review textarea */
-}
-
-.review label {
-    font-weight: bold; /* Bold label for review textarea */
-}
-
-textarea {
-    width: 100%; /* Full width for the textarea */
-    padding: 10px; /* Padding inside the textarea */
-    border: 1px solid #ccc; /* Light border */
-    border-radius: 4px; /* Rounded corners */
-    resize: vertical; /* Allow vertical resizing */
-}
-
-button {
-    background-color: #007bff; /* Blue background color */
-    color: white; /* White text */
-    padding: 10px; /* Padding inside the button */
-    border: none; /* No border */
-    border-radius: 5px; /* Rounded corners */
+/* Individual Stars */
+.star {
+    font-size: 30px; /* Size of the stars */
+    color: #ccc; /* Default star color */
     cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s; /* Smooth transition for background color */
 }
 
-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+/* Star Hover Effect */
+.star:hover,
+.star:hover ~ .star {
+    color: gold; /* Highlighted star color */
 }
+
+/* Textarea Styling */
+textarea {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding inside the textarea */
+    border: 1px solid #ccc; /* Border styling */
+    border-radius: 5px; /* Rounded corners */
+    resize: none; /* Disable resizing */
+    font-size: 16px; /* Font size */
+}
+
+/* Submit Button Styling */
+button {
+    background-color: #007BFF; /* Button color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 16px; /* Font size */
+    transition: background-color 0.3s; /* Transition effect */
+}
+
+/* Button Hover Effect */
+button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Form Container */
+.review-form {
+    text-align: center; /* Center the text */
+    width: 300px; /* Maximum width for the form */
+    margin: 0 auto; /* Center the form */
+    padding: 10px; /* Padding inside the form */
+    border: 1px solid #ddd; /* Form border */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #f9f9f9; /* Background color */
+}
+
+.review_button{
+        font-weight: 600; /* Font weight */
+        color: white; /* Button text color */
+        background-color: #6f42c1; /* Replace with actual violet background color */
+        border-color: #6f42c1;
+        margin-top: 10px;
+        padding: 7px;
+        border-radius: 10px; /* Rounded corners */
+    }
+    
+.review_button:hover {
+        color: white; /* Hover text color */
+        background-color: #5c37a0; /* Replace with the calculated shade color for hover (10% darker) */
+        border-color: #5c37a0; /* Replace with the calculated shade color for border on hover */
+    }
+
+    
+.review_button:active {
+        color: white; /* Active state text color */
+        background-color: #4b2c80; /* Replace with the calculated shade color for active (20% darker) */
+        border-color: #4b2c80; /* Replace with the calculated shade color for border on active */
+    }
+    
+#star-rating .star {
+        font-size: 25px;
+        cursor: pointer;
+        color: #ccc;
+    }
+#star-rating .star.selected {
+        color: gold;
+    }

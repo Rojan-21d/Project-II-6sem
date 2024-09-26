@@ -246,7 +246,7 @@ table tr:hover{
 
 .backBtn button{
     padding: .6rem 1rem;
-    margin-right: 9rem;
+    margin-right: 3rem;
     border: none;
     background: #04b18f;
     border-radius: 5px;
@@ -263,8 +263,16 @@ table tr:hover{
     object-fit: cover;
 }
 
-.description-more{
+.delivered-dis{
+    margin : 10px;
     text-align: center;
+    background-color: green;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.description-more{
+    text-align: left;
     padding: 1.5rem;
     border-right: 1px solid white;
 }
@@ -278,3 +286,6 @@ table tr:hover{
     list-style: none;
 }
 
+.load-detail-single{
+    width: 70%;
+}

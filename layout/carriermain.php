@@ -26,17 +26,26 @@ if ($history_result->num_rows > 0) {
     // Carrier has booking history
 
     // Algorithm Step 2A: Suggest loads based on past destinations
+    // $sql = "SELECT ld.*, cd.name AS consignor_name, cd.img_srcs AS consignor_img, cd.email AS consignor_email, 
+    //             COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
+    //         FROM loaddetails ld
+    //         JOIN consignordetails cd ON ld.consignor_id = cd.id
+    //         LEFT JOIN reviews r ON cd.id = r.consignor_id
+    //         WHERE ld.status = 'notBooked' AND 
+    //             ld.destination IN (SELECT destination FROM shipment WHERE carrier_id = $carrier_id)
+    //         GROUP BY ld.id, cd.name, cd.img_srcs, cd.email";
+
     $sql = "SELECT ld.*, cd.name AS consignor_name, cd.img_srcs AS consignor_img, cd.email AS consignor_email, 
-                COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
-            FROM loaddetails ld
-            JOIN consignordetails cd ON ld.consignor_id = cd.id
-            LEFT JOIN reviews r ON cd.id = r.consignor_id
-            WHERE ld.status = 'notBooked' AND 
-                ld.destination IN (SELECT destination FROM shipment WHERE carrier_id = $carrier_id)
-            GROUP BY ld.id, cd.name, cd.img_srcs, cd.email";
+            COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
+        FROM loaddetails ld
+        JOIN consignordetails cd ON ld.consignor_id = cd.id
+        LEFT JOIN shipment s ON s.consignor_id = cd.id
+        LEFT JOIN reviews r ON s.id = r.shipment_id  -- Updated to use 'shipment_id' from the 'reviews' table
+        WHERE ld.status = 'notBooked'
+        GROUP BY ld.id, cd.name, cd.img_srcs, cd.email";
 
 } else {
-    // Carrier has no booking history
+    // No booking history
 
     // Step 3: Get user's current location if available
     if (isset($_POST['latitude']) && isset($_POST['longitude'])) {
@@ -60,7 +69,8 @@ if ($history_result->num_rows > 0) {
                     + sin(radians($latitude)) * sin(radians(ld.origin_latitude)))) AS distance 
                 FROM loaddetails ld
                 JOIN consignordetails cd ON ld.consignor_id = cd.id
-                LEFT JOIN reviews r ON cd.id = r.consignor_id
+                LEFT JOIN shipment s ON ld.id = s.load_id
+                LEFT JOIN reviews r ON s.id = r.shipment_id
                 WHERE ld.status = 'notBooked'
                 HAVING distance < 50
                 GROUP BY ld.id, cd.name, cd.img_srcs, cd.email
@@ -71,11 +81,13 @@ if ($history_result->num_rows > 0) {
                        COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
                 FROM loaddetails ld
                 JOIN consignordetails cd ON ld.consignor_id = cd.id
-                LEFT JOIN reviews r ON cd.id = r.consignor_id
+                LEFT JOIN shipment s ON ld.id = s.load_id
+                LEFT JOIN reviews r ON s.id = r.shipment_id
                 WHERE ld.status = 'notBooked'
                 GROUP BY ld.id, cd.name, cd.img_srcs, cd.email";
     }
 }
+
 
 // Execute the query
 $result = $conn->query($sql);

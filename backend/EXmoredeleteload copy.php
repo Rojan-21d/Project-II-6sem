@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="../css/maincontentstyle.css">
     <link rel="stylesheet" href="../css/headerfooterstyle.css">
     <link rel="stylesheet" href="../css/sweetAlert.css">
-    <link rel="stylesheet" href="../css/submit_review.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
     <script src="../js/sweetalert.js"></script>
@@ -120,60 +119,58 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
             <a href="../home.php"><button type="button">Back</button></a>
         </div>
         <div class="more">
-            <div class="load-detail-single description-more">
-                <img src="../<?php echo $more['img_srcs']; ?>" alt="Image" class="more-img">
-                    <div class="">
-                        <h3><?php echo $more['name']; ?></h3>
-                        <ul>
-                            <li>Origin: <?php echo $more['origin']; ?></li>
-                            <li>Destination: <?php echo $more['destination']; ?></li>
-                            <li>Distance: <?php echo $more['distance']; ?> Km</li>
-                            <li>Weight: <?php echo $more['weight']; ?> Ton</li>
-                            <li>Description: <?php echo $more['description']; ?></li>
-                            <li>Sceduled by: <?php echo $more['scheduled_time']; ?></li>
-                            <?php
-                            // Fetch delivered time if the load is delivered
-                            if ($stat === 'delivered') {
-                                // Query to get delivered_time from shipment table
-                                $sql2 = "SELECT delivered_time FROM shipment WHERE load_id = '$id'";
-                                $result2 = $conn->query($sql2);
-                                if ($result2 && $result2->num_rows > 0) {
-                                    $row2 = $result2->fetch_assoc();
-                                    $delivered_time = $row2['delivered_time'];
+        <img src="../<?php echo $more['img_srcs']; ?>" alt="Image" class="more-img">
+            <div class="description-more">
+                <h3><?php echo $more['name']; ?></h3>
+                <ul>
+                    <li>Origin: <?php echo $more['origin']; ?></li>
+                    <li>Destination: <?php echo $more['destination']; ?></li>
+                    <li>Distance: <?php echo $more['distance']; ?> Km</li>
+                    <li>Weight: <?php echo $more['weight']; ?> Ton</li>
+                    <li>Description: <?php echo $more['description']; ?></li>
+                    <li>Sceduled by: <?php echo $more['scheduled_time']; ?></li>
+                    <?php
+                    // Fetch delivered time if the load is delivered
+                    if ($stat === 'delivered') {
+                        // Query to get delivered_time from shipment table
+                        $sql2 = "SELECT delivered_time FROM shipment WHERE load_id = '$id'";
+                        $result2 = $conn->query($sql2);
+                        if ($result2 && $result2->num_rows > 0) {
+                            $row2 = $result2->fetch_assoc();
+                            $delivered_time = $row2['delivered_time'];
 
-                                    echo "<li>Delivered Time: " . $delivered_time . "</li>";
+                            echo "<li>Delivered Time: " . $delivered_time . "</li>";
 
-                                    // Calculate the difference between scheduled_time and delivered_time
-                                    $scheduled_time = new DateTime($more['scheduled_time']);
-                                    $delivered_time_dt = new DateTime($delivered_time);
-                                    
-                                    $interval = $scheduled_time->diff($delivered_time_dt);
-                                    $days = $interval->days;
-                                    $hours = $interval->h;
-                                    
-                                    if ($days === 0 && $hours === 0) {
-                                        // Delivery is on time (same day)
-                                        echo "<li>Delivery was on time.</li>";
-                                    } else {
-                                        // Determine if delivery was ahead of or late by the scheduled time
-                                        $aheadOrLate = ($interval->invert == 1) ? "ahead of" : "late by";
-                                        echo "<li>Delivery was $aheadOrLate $days days and $hours hours</li>";
-                                    }
-                                    
-                                }
+                            // Calculate the difference between scheduled_time and delivered_time
+                            $scheduled_time = new DateTime($more['scheduled_time']);
+                            $delivered_time_dt = new DateTime($delivered_time);
+                            
+                            $interval = $scheduled_time->diff($delivered_time_dt);
+                            $days = $interval->days;
+                            $hours = $interval->h;
+                            
+                            if ($days === 0 && $hours === 0) {
+                                // Delivery is on time (same day)
+                                echo "<li>Delivery was on time.</li>";
+                            } else {
+                                // Determine if delivery was ahead of or late by the scheduled time
+                                $aheadOrLate = ($interval->invert == 1) ? "ahead of" : "late by";
+                                echo "<li>Delivery was $aheadOrLate $days days and $hours hours</li>";
                             }
+                            
+                        }
+                    }
 
-                            ?>
-                        </ul>                        
-                    </div>
-                </div>
+                    ?>
+                </ul>
+            </div>
             
             <?php
             //what to display
             if($_SESSION['usertype'] == "carrier"){
                 echo "
                 <div class='takenby description-more'>
-                <h3 style='text-align:center' important>Load By</h3>";
+                <h3>Load By</h3>";
                                 
                 $sql3 = "SELECT consignordetails.id, consignordetails.name, consignordetails.email, consignordetails.address, consignordetails.contact, consignordetails.img_srcs
                 FROM consignordetails
@@ -191,33 +188,12 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                     } else {
                         // Displaying
                         echo '<ul>';
-                        echo '<li style="text-align:center" important><img src="../'. $rowShip["img_srcs"]. '" style="height: 85px; width: auto;"></li>';
+                        echo '<li><img src="../'. $rowShip["img_srcs"]. '" style="height: 85px; width: auto;"></li>';
                         echo '<li>Name: '. $rowShip["name"]. '</li>';
                         echo '<li>Email: '. $rowShip["email"]. '</li>';
                         echo '<li>Address: '. $rowShip["address"]. '</li>';
                         echo '<li>Contact: '. $rowShip["contact"]. '</li>';
                         echo '</ul>';
-                        if ( $stat == 'delivered'){
-                        // Code to give rating and review for carrier
-                        echo "<p class='delivered-dis'>Delivered</P>";
-                        echo '
-                            <form method="POST" action="" class="review-form">
-                                <div id="star-rating">
-                                    <span class="star" data-value="1">&#9733;</span>
-                                    <span class="star" data-value="2">&#9733;</span>
-                                    <span class="star" data-value="3">&#9733;</span>
-                                    <span class="star" data-value="4">&#9733;</span>
-                                    <span class="star" data-value="5">&#9733;</span>
-                                </div>
-                                <input type="hidden" name="rating" id="rating" value="0">
-                                <br>
-                                <textarea name="review" placeholder="Write your review here (Optional)..." rows="4" cols="50" required></textarea>
-                                <br>
-                                <input type="hidden" name="shipment_id" value="' . $shipment_id . '">
-                                <button type="submit" name="submitReview" class="review_button">Submit Review</button>
-                            </form>
-                        ';
-                        }
                     }
                     echo "</div>";
                 }                
@@ -238,12 +214,30 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                             <button type='submit'>Delivered</button>
                         </form>
                     </div>";
+                } else {
+                    echo "Delivered";
+                    // code to give rating and review for consignor
+                    echo '
+                        <form method="POST" action="">
+                            <div id="star-rating">
+                                <span class="star" data-value="1">&#9733;</span>
+                                <span class="star" data-value="2">&#9733;</span>
+                                <span class="star" data-value="3">&#9733;</span>
+                                <span class="star" data-value="4">&#9733;</span>
+                                <span class="star" data-value="5">&#9733;</span>
+                            </div>
+                            <input type="hidden" name="rating" id="rating" value="0">
+                            <br><br>
+                            <textarea name="review" placeholder="Write your review here..." rows="4" cols="50" required></textarea>
+                            <br><br>
+                            <input type="submit" value="Submit">
+                        </form>';
                 }
                 echo "</div>";
             } elseif($_SESSION['usertype'] == "consignor"){
                 echo "
                 <div class='takenby description-more'>
-                    <h3  style='text-align:center' important>Booked By</h3>";
+                    <h3>Booked By</h3>";
                     
                 $sql3 = "SELECT carrierdetails.id, carrierdetails.name, carrierdetails.email, carrierdetails.address, carrierdetails.contact, carrierdetails.img_srcs
                 FROM carrierdetails
@@ -263,7 +257,7 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                     } else {
                         // Displaying
                         echo '<ul>';
-                        echo '<li style="text-align:center" important><img src="../'. $rowShip["img_srcs"]. '" style="height: 85px; width: auto;"></li>';
+                        echo '<li><img src="../'. $rowShip["img_srcs"]. '" style="height: 85px; width: auto;"></li>';
                         echo '<li>Name: '. $rowShip["name"]. '</li>';
                         echo '<li>Email: '. $rowShip["email"]. '</li>';
                         echo '<li>Address: '. $rowShip["address"]. '</li>';
@@ -278,10 +272,10 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                             <input type='hidden' name='shipment_id' value='" . $row['id'] . "'> <!--passing shipment id-->
                             <button type='submit' name='cancel'>Cancel</button>
                         </form>";
-                        } else {
-                            // Code to give rating and review for consignor
+                        } else{
+                            // code to give rating and review for consignor
                             echo '
-                                <form method="POST" action="" class="review-form">
+                                <form method="POST" action="">
                                     <div id="star-rating">
                                         <span class="star" data-value="1">&#9733;</span>
                                         <span class="star" data-value="2">&#9733;</span>
@@ -290,13 +284,11 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                                         <span class="star" data-value="5">&#9733;</span>
                                     </div>
                                     <input type="hidden" name="rating" id="rating" value="0">
-                                    <br>
-                                    <textarea name="review" placeholder="Write your review here (Optional) ..." rows="4" cols="50" required></textarea>
-                                    <br>                                    
-                                    <input type="hidden" name="shipment_id" value="' . $shipment_id . '">
-                                    <button type="submit" name="submitReview" class="review_button">Submit Review</button>
-                                </form>
-                            ';
+                                    <br><br>
+                                    <textarea name="review" placeholder="Write your review here..." rows="4" cols="50" required></textarea>
+                                    <br><br>
+                                    <input type="submit" value="Submit">
+                                </form>';
                         }
                     echo "</div>";
                     }
@@ -330,28 +322,8 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
     <?php
     }
 }
-
-
-
-if (isset($_POST['submitReview'])) {
-    $shipmentId = $_POST['shipment_id'];
-    $rating = $_POST['rating'];
-    $review = $_POST['review'];
-
-    //getting extra data like loadId, carrierId and consignorId
-    
-    $stmt = $conn->prepare("INSERT INTO reviews (shipment_id, reviewer_type, rating, review) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("isss", $shipmentId, $_SESSION['usertype'], $rating, $review);
-    $stmt->execute();
-    $stmt->close();
-}
-
 include '../layout/footer.php';
 ?>
-
-
-
 <script src="../js/confirmationSA.js"></script>
-<script src="../js/review_stars.js"></script>
 </body>
 </html>
