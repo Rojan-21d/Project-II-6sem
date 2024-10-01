@@ -162,6 +162,7 @@ $result = $conn->query($sql);
                                     <li>Distance: ' . $loadrow['distance'] . ' Km</li>
                                     <li>Weight: ' . $loadrow['weight'] . ' Ton</li>
                                     <li>Description: ' . $loadrow['description'] . '</li>
+                                    <li>Price: ' . $loadrow['price'] . '</li>
                                 </ul>
                             </div>
                         </div>

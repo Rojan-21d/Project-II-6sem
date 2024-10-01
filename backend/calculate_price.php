@@ -6,7 +6,6 @@ function calculateDynamicPrice($db, $distance, $weight, $scheduled_time) {
     // Fetch pricing configuration from the database
     $config = [];
     $result = $db->query("SELECT config_name, config_value FROM pricing_config");
-    
     if ($result === false) {
         die("Error fetching pricing configuration: " . $db->error);
     }
@@ -18,7 +17,6 @@ function calculateDynamicPrice($db, $distance, $weight, $scheduled_time) {
     // Fetch weight class pricing from the database
     $basePrice = 0; // Defining basePrice variable
     $result = $db->query("SELECT base_price_min, base_price_max FROM weight_class_pricing WHERE min_weight <= $weight AND max_weight >= $weight");
-    
     if ($result === false) {
         die("Error fetching weight class pricing: " . $db->error);
     }
@@ -60,5 +58,9 @@ $scheduled_time = isset($_POST['scheduled_time']) ? $_POST['scheduled_time'] : d
 $price = calculateDynamicPrice($conn, $distance, $weight, $scheduled_time);
 
 // Return the price as JSON
-echo json_encode(['price' => $price]);
+// echo json_encode(['price' => $price]);
+if (json_encode(['price' => $price]) !== json_encode(['price' => 250])) {
+    // If it's not equal, return the JSON response
+    echo json_encode(['price' => $price]);
+}
 ?>

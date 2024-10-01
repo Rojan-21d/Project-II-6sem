@@ -176,9 +176,12 @@ if (isset($_POST['signupBtn'])) {
                 <label for="load_pic">Image:</label>
                 <input class="inpImg" type="file" id="load_pic" name="load_pic" accept="image/*" placeholder="Image">
             </div>
-            <div class="data-input">
+            <div class="note">
+                    <small>**Price is based on Distance, Weight and Scheduled Time**</small>
+                </div>
+            <div class="data-input ">
                 <label for="price">Calculated Price:</label>
-                <span id="calculated_price">0</span>   
+                <span id="calculated_price">0</span>  
             </div>
             <div class="button-input">
                 <input type="hidden" name="id" value="">

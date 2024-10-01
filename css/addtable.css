@@ -109,3 +109,12 @@ button:hover{
   width: 10%;
   height: 5%;
 }
+
+.note {
+  margin-top: 5px;
+  font-style: italic;
+  color: #f90202;
+  font-size: 0.9em;
+  line-height: 1.2;
+  text-align: center;
+}
