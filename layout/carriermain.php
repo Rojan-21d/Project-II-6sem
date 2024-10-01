@@ -10,10 +10,7 @@ if (!isset($_SESSION['email'])) {
     exit;
 }
 
-// Carrier ID from session
 $carrier_id = $_SESSION['id'];
-
-// Connect to the database (ensure $conn is defined in your script)
 
 // Algorithm Step 1: Check if carrier has any booking history
 $history_query = "SELECT ld.* FROM shipment s 
@@ -26,15 +23,6 @@ if ($history_result->num_rows > 0) {
     // Carrier has booking history
 
     // Algorithm Step 2A: Suggest loads based on past destinations
-    // $sql = "SELECT ld.*, cd.name AS consignor_name, cd.img_srcs AS consignor_img, cd.email AS consignor_email, 
-    //             COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
-    //         FROM loaddetails ld
-    //         JOIN consignordetails cd ON ld.consignor_id = cd.id
-    //         LEFT JOIN reviews r ON cd.id = r.consignor_id
-    //         WHERE ld.status = 'notBooked' AND 
-    //             ld.destination IN (SELECT destination FROM shipment WHERE carrier_id = $carrier_id)
-    //         GROUP BY ld.id, cd.name, cd.img_srcs, cd.email";
-
     $sql = "SELECT ld.*, cd.name AS consignor_name, cd.img_srcs AS consignor_img, cd.email AS consignor_email, 
             COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
         FROM loaddetails ld

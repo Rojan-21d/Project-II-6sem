@@ -7,7 +7,8 @@ function calculateDynamicPrice($db, $distance, $weight, $scheduled_time) {
     $config = [];
     $result = $db->query("SELECT config_name, config_value FROM pricing_config");
     if ($result === false) {
-        die("Error fetching pricing configuration: " . $db->error);
+        showAlert("Error fetching pricing configuration: " . $db->error, 'error');
+        return null;
     }
 
     while ($row = $result->fetch_assoc()) {
@@ -18,14 +19,16 @@ function calculateDynamicPrice($db, $distance, $weight, $scheduled_time) {
     $basePrice = 0; // Defining basePrice variable
     $result = $db->query("SELECT base_price_min, base_price_max FROM weight_class_pricing WHERE min_weight <= $weight AND max_weight >= $weight");
     if ($result === false) {
-        die("Error fetching weight class pricing: " . $db->error);
+        showAlert("Error fetching weight class pricing: " . $db->error, 'error');
+        return null;
     }
     
     if ($row = $result->fetch_assoc()) {
         // Calculate average base price for the weight class
         $basePrice = ($row['base_price_min'] + $row['base_price_max']) / 2;
     } else {
-        die("Error: Weight class not found.");
+        showAlert("Error: Weight class not found.", 'error');
+        return null;
     }
 
     $distanceFactor = $config['distance_factor'];
@@ -38,15 +41,12 @@ function calculateDynamicPrice($db, $distance, $weight, $scheduled_time) {
     $urgencyFactor = 0;
     if ($hoursRemaining > 0) {
         // Calculate urgency increase based on remaining hours
-        // $averageKmPerDay = 400;
         $averageKmPerDay = $config['average_km_per_day'];
         $urgencyFactor = max(0, $config['urgency_factor'] * ($distance / $averageKmPerDay * 24 - $hoursRemaining));
     }
 
-    // Calculate final price in Nepali Rupees
     $finalPrice = ($basePrice + ($distanceFactor * $distance) + $urgencyFactor);
-
-    return $finalPrice; // This will return the price in NPR
+    return $finalPrice;
 }
 
 // Get the parameters from the AJAX request
@@ -54,13 +54,29 @@ $distance = isset($_POST['distance']) ? (float)$_POST['distance'] : 0;
 $weight = isset($_POST['weight']) ? (float)$_POST['weight'] : 0;
 $scheduled_time = isset($_POST['scheduled_time']) ? $_POST['scheduled_time'] : date('Y-m-d H:i:s');
 
-// Calculate the price
 $price = calculateDynamicPrice($conn, $distance, $weight, $scheduled_time);
 
+if ($price === null) {
+    // If there was an error in calculation, exit
+    exit;
+}
+
 // Return the price as JSON
-// echo json_encode(['price' => $price]);
 if (json_encode(['price' => $price]) !== json_encode(['price' => 250])) {
     // If it's not equal, return the JSON response
     echo json_encode(['price' => $price]);
+}
+
+function showAlert($message, $type = 'error') {
+    $title = ($type == "success") ? "Success" : "Error";
+    echo "<script>
+    Swal.fire({
+        icon: '$type',
+        title: '$title',
+        html: '$message',
+    }).then((result) => {
+        window.location.href = '../home.php'; // Redirect after alert
+    });
+    </script>";
 }
 ?>
