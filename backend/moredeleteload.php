@@ -74,6 +74,48 @@ function displayRating($rating, $numReviews) {
     return $output;
 }
 
+function checkOldReviews($conn, $shipment_id) {
+    $shipmentId = $shipment_id;
+    $reviewerType = $_SESSION['usertype'];
+
+    // Prepare the SQL query
+    $sql = 'SELECT id, shipment_id, reviewer_type, rating, review, created_at 
+            FROM reviews 
+            WHERE shipment_id = ?';
+
+    // Check if the prepared statement is successfully created
+    if ($stmt = $conn->prepare($sql)) {
+        // Bind the shipment_id parameter
+        $stmt->bind_param('i', $shipmentId);
+
+        // Execute the prepared statement
+        $stmt->execute();
+
+        // Bind the result columns to variables
+        $stmt->bind_result($id, $shipment_id, $reviewer_type, $rating, $review, $created_at);
+
+        $reviews = [];
+
+        // Fetch all results
+        while ($stmt->fetch()) {
+            // Store each review data in an associative array
+            $reviews[] = [
+                'shipment_id' => $shipment_id,
+                'reviewer_type' => $reviewer_type,
+                'rating' => $rating,
+                'review' => $review,
+                'created_at' => $created_at,
+            ];
+        }
+
+        // Return all reviews found, if any
+        return $reviews;
+    } else {
+        return false;
+    }
+}
+
+
 if (isset($_POST['action']) && isset($_POST['id'])) {
     $id = $_POST['id'];
     $_SESSION['load_id'] = $id;
@@ -223,9 +265,15 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                     } else {
                         // Displaying
                         // Fetch consignor rating
-                        $sql_consignor_rating = "SELECT AVG(rating) AS avg_rating, COUNT(*) AS num_reviews 
-                        FROM reviews 
-                        WHERE shipment_id IN (SELECT id FROM shipment WHERE consignor_id = (SELECT consignor_id FROM loaddetails WHERE id = ?))";
+                        $sql_consignor_rating = "SELECT AVG(rating) AS avg_rating, COUNT(*) AS num_reviews
+                            FROM reviews
+                            WHERE shipment_id IN (
+                                SELECT id 
+                                FROM shipment 
+                                WHERE consignor_id = (SELECT consignor_id FROM loaddetails WHERE id = ?)
+                            ) 
+                            AND reviews.reviewer_type = 'carrier';
+                            ";
 
                         $stmt = $conn->prepare($sql_consignor_rating);
                         $stmt->bind_param("i", $id);
@@ -247,26 +295,44 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                         echo '<li>Address: '. $rowShip["address"]. '</li>';
                         echo '<li>Contact: '. $rowShip["contact"]. '</li>';
                         echo '</ul>';
-                        if ( $stat == 'delivered'){
-                        // Code to give rating and review for carrier
-                        echo "<p class='delivered-dis'>Delivered</P>";
-                        echo '
-                            <form method="POST" action="" class="review-form">
-                                <div id="star-rating">
-                                    <span class="star" data-value="1">&#9733;</span>
-                                    <span class="star" data-value="2">&#9733;</span>
-                                    <span class="star" data-value="3">&#9733;</span>
-                                    <span class="star" data-value="4">&#9733;</span>
-                                    <span class="star" data-value="5">&#9733;</span>
-                                </div>
-                                <input type="hidden" name="rating" id="rating" value="0">
-                                <br>
-                                <textarea name="review" placeholder="Write your review here (Optional)..." rows="4" cols="50" required></textarea>
-                                <br>
-                                <input type="hidden" name="shipment_id" value="' . $shipment_id . '">
-                                <button type="submit" name="submitReview" class="review_button">Submit Review</button>
-                            </form>
-                        ';
+                        if ($stat == 'delivered') {
+                            // Fetch old reviews for the current shipment
+                            $oldReviews = checkOldReviews($conn, $shipment_id);
+                        
+                            $alreadyReviewed = false;
+                        
+                            // Loop through the reviews and check if the current user has already reviewed
+                            foreach ($oldReviews as $review) {
+                                if ($review['shipment_id'] == $shipment_id && $review['reviewer_type'] == $_SESSION['usertype']) {
+                                    $alreadyReviewed = true;
+                                    break;
+                                }
+                            }
+                        
+                            // If no review by current user type, show the review form
+                            if (!$alreadyReviewed) {
+                                echo "<p class='delivered-dis'>Delivered</p>";
+                                echo '
+                                    <form method="POST" action="" class="review-form">
+                                        <div id="star-rating">
+                                            <span class="star" data-value="1">&#9733;</span>
+                                            <span class="star" data-value="2">&#9733;</span>
+                                            <span class="star" data-value="3">&#9733;</span>
+                                            <span class="star" data-value="4">&#9733;</span>
+                                            <span class="star" data-value="5">&#9733;</span>
+                                        </div>
+                                        <input type="hidden" name="rating" id="rating" value="0">
+                                        <br>
+                                        <textarea name="review" placeholder="Write your review here (Optional)..." rows="4" cols="50" required></textarea>
+                                        <br>
+                                        <input type="hidden" name="shipment_id" value="' . $shipment_id . '">
+                                        <button type="submit" name="submitReview" class="review_button">Submit Review</button>
+                                    </form>
+                                ';
+                            } else {
+                                // Display a message if the user has already reviewed
+                                echo "<p class='delivered-dis'>You have already reviewed this shipment.</p>";
+                            }
                         }
                     }
                     echo "</div>";
@@ -315,8 +381,9 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                         // Fetch carrier rating
                         $sql_carrier_rating = "SELECT AVG(rating) AS avg_rating, COUNT(*) AS num_reviews 
                         FROM reviews 
-                        WHERE shipment_id IN (SELECT id FROM shipment WHERE carrier_id = (SELECT carrier_id FROM loaddetails WHERE id = ?))";
-
+                        WHERE shipment_id IN (SELECT id FROM shipment WHERE carrier_id = (SELECT carrier_id FROM loaddetails WHERE id = ?))
+                        AND reviews.reviewer_type = 'consignor'";
+                        
                         $stmt = $conn->prepare($sql_carrier_rating);
                         $stmt->bind_param("i", $id);
                         $stmt->execute();

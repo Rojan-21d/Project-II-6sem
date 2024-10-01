@@ -17,6 +17,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 include '../backend/databaseconnection.php';
+require '../backend/dynamic_pricing.php'; // Adjust the path as necessary
 
 // Check if the user is not logged in
 if (!isset($_SESSION['email'])) {
@@ -93,42 +94,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
 
-        
-    // Display errors using SweetAlert
-    if (!empty($errors)) {
-        $errorMessages = join("<br>", $errors);
-        echo '<script>
-            Swal.fire({
-                icon: "error",
-                title: "Errors",
-                html: `' . $errorMessages . '`,
-            });
-        </script>';
-    } else {
-
-
-        // Insert the data into the database
-        $sql = "INSERT INTO loaddetails (name, origin, destination, distance, description, weight, status, consignor_id, img_srcs, scheduled_time)
-        VALUES ('$name', '$origin', '$destination', '$distance', '$description', '$weight', 'notBooked', '{$_SESSION['id']}', '$uploaded_file_path', '$scheduled_time')";
-        $result = $conn->query($sql);
-
-
-        if ($result) {
-            // Redirect to the success page
-            header("Location: addload.php?success=1");
-            exit;
-        } else {
-            // Handle database insertion error
+        // Display errors using SweetAlert
+        if (!empty($errors)) {
+            $errorMessages = join("<br>", $errors);
             echo '<script>
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "Database Error: ' . $conn->error . '",
-            });
-            </script>';    
+                Swal.fire({
+                    icon: "error",
+                    title: "Errors",
+                    html: `' . $errorMessages . '`,
+                });
+            </script>';
+        } else {
+            // Call the calculateDynamicPrice function to calculate the price
+            // $supplyDemandFactor = 1.2; // You can adjust this value based on your logic
+            // $calculatedPrice = calculateDynamicPrice($conn, $distance, $weight, 24, $supplyDemandFactor);
+            $calculatedPrice = calculateDynamicPrice($conn, $distance, $weight, 24);
+
+            // Insert the data into the database, including the calculated price if needed
+            $sql = "INSERT INTO loaddetails (name, origin, destination, distance, description, weight, status, consignor_id, img_srcs, scheduled_time, price)
+            VALUES ('$name', '$origin', '$destination', '$distance', '$description', '$weight', 'notBooked', '{$_SESSION['id']}', '$uploaded_file_path', '$scheduled_time', '$calculatedPrice')";
+
+            $result = $conn->query($sql);
+
+            if ($result) {
+                // Redirect to the success page
+                header("Location: addload.php?success=1");
+                exit;
+            } else {
+                // Handle database insertion error
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Database Error: ' . $conn->error . '",
+                });
+                </script>';    
+            }
         }
     }
-}
 }
 ?>
 
