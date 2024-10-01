@@ -400,6 +400,9 @@
                             <li>
                                 <?php echo displayRating($loadrow['carrier_rating'], $loadrow['num_reviews']); ?>
                             </li>
+                            <form action="../profile.php">
+                                <button class="btn btn-primary">View Profile</button>
+                            </form>
                             <?php
                             echo '<li>Name: ' . $rowShip["name"] . '</li>';
                             echo '<li>Email: ' . $rowShip["email"] . '</li>';
