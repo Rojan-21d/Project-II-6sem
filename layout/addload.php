@@ -7,6 +7,7 @@
     <script src="../js/sweetalert.js"></script>
     <script src="../js/datevalidation.js"></script>
     <script src="../js/dynamicprice.js"></script>
+    <script src="../js/dateselectionaddload.js"></script>
     <link rel="stylesheet" href="../css/addtable.css">
     <link rel="stylesheet" href="../css/sweetAlert.css">
     <link rel="stylesheet" href="../css/submit_review.css">    

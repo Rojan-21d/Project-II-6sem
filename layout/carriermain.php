@@ -14,17 +14,12 @@ include(dirname(__DIR__) . '/backend/display_rating.php');
 
 $carrier_id = $_SESSION['id'];
 
-// Algorithm Step 1: Check if carrier has any booking history
 $history_query = "SELECT ld.* FROM shipment s 
                   JOIN loaddetails ld ON s.load_id = ld.id 
                   WHERE s.carrier_id = $carrier_id";
 $history_result = $conn->query($history_query);
 
-// Algorithm Step 2: Load suggestion logic
 if ($history_result->num_rows > 0) {
-    // Carrier has booking history
-
-    // Algorithm Step 2A: Suggest loads based on past destinations
     $sql = "SELECT ld.*, cd.name AS consignor_name, cd.img_srcs AS consignor_img, cd.email AS consignor_email, 
             COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
         FROM loaddetails ld
@@ -34,7 +29,6 @@ if ($history_result->num_rows > 0) {
         WHERE ld.status = 'notBooked'
         GROUP BY ld.id, cd.name, cd.img_srcs, cd.email";
 } else {
-    // No booking history, just return all loads
     $sql = "SELECT ld.*, cd.name AS consignor_name, cd.img_srcs AS consignor_img, cd.email AS consignor_email,
                    COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
             FROM loaddetails ld
@@ -45,7 +39,6 @@ if ($history_result->num_rows > 0) {
             GROUP BY ld.id, cd.name, cd.img_srcs, cd.email";
 }
 
-// Execute the query
 $result = $conn->query($sql);
 ?>
 
@@ -63,7 +56,6 @@ $result = $conn->query($sql);
     <div class="main-content">
         <h2>Loads for You</h2>
         <?php
-        // Display loads
         if ($result->num_rows > 0) {
             while ($loadrow = $result->fetch_assoc()) {
                 echo '

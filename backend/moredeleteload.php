@@ -34,14 +34,15 @@
         });
     </script>";
     }
-    function checkOldReviews($conn, $shipment_id){
+    function checkOldReviews($conn, $shipment_id) {
         $shipmentId = $shipment_id;
-        $reviewerType = $_SESSION['usertype'];
+        $reviewerType = $_SESSION['usertype'];  // 'consignor'
         $sql = 'SELECT id, shipment_id, reviewer_type, rating, review, created_at 
-            FROM reviews 
-            WHERE shipment_id = ?';
+                FROM reviews 
+                WHERE shipment_id = ? AND reviewer_type = ?';  // Filter by reviewer_type as well
+    
         if ($stmt = $conn->prepare($sql)) {
-            $stmt->bind_param('i', $shipmentId);
+            $stmt->bind_param('is', $shipmentId, $reviewerType);  // Bind 'i' for shipment_id (int) and 's' for reviewer_type (string)
             $stmt->execute();
             $stmt->bind_result($id, $shipment_id, $reviewer_type, $rating, $review, $created_at);
             $reviews = [];
@@ -59,11 +60,12 @@
             return false;
         }
     }
+    
     if (isset($_POST['action']) && isset($_POST['id'])) {
         $id = $_POST['id'];
         $_SESSION['load_id'] = $id;
         $shipment_id = isset($_POST['shipment_id']) ? $_POST['shipment_id'] : ''; // Set shipment_id to an empty string if it is not set
-        $action = $_POST['action']; // Assign a value to $action
+        $action = $_POST['action']; 
         if ($action == 'delete') {
             // Delete the row
             $sql = "DELETE FROM loaddetails WHERE id = '$id'";
@@ -76,9 +78,8 @@
             $conn->query($sql);
             showAlert("Load Deleted Successfully.", "success");
         } elseif ($action == 'edit') {
-            // Update Load Details
             header("Location: updateload.php");
-        } elseif ($action == 'cancel') { // Cancel Load Details
+        } elseif ($action == 'cancel') { 
             try {
                 $conn->begin_transaction();
                 $sql = "UPDATE loaddetails SET status = 'notBooked' WHERE id = '$id'";
@@ -93,7 +94,7 @@
                 showAlert("ERROR! ' . $th . '", "error");
                 exit();
             }
-        } elseif ($action == 'deliver') { // Mark Delivered Load Details
+        } elseif ($action == 'deliver') {
             try {
                 $sql = "UPDATE loaddetails SET status = 'delivered' WHERE id = '$id'";
                 $conn->query($sql);
@@ -172,7 +173,7 @@
                     echo "
                     <div class='takenby description-more'>
                     <h3 style='text-align:center' important>Load By</h3>";
-                        $sql3 = "SELECT consignordetails.id, consignordetails.name, consignordetails.email, consignordetails.address, consignordetails.contact, consignordetails.img_srcs
+                        $sql3 = "SELECT consignordetails.id as consignorID, consignordetails.name, consignordetails.email, consignordetails.address, consignordetails.contact, consignordetails.img_srcs
                     FROM consignordetails
                     INNER JOIN shipment ON consignordetails.id = shipment.consignor_id    
                     WHERE shipment.load_id = '$id'";
@@ -207,6 +208,7 @@
                                     <?php echo displayRating($loadrow['consignor_rating'], $loadrow['num_reviews']); ?>
                                 </li>
                                 <?php
+                                echo '<a href="view_review.php?consignor_id=' . $rowShip["consignorID"] . '" class="review-list-link">View Profile and Reviews</a>';
                                 echo '<li>Name: ' . $rowShip["name"] . '</li>';
                                 echo '<li>Email: ' . $rowShip["email"] . '</li>';
                                 echo '<li>Address: ' . $rowShip["address"] . '</li>';
@@ -271,7 +273,7 @@
                     echo "
                     <div class='takenby description-more'>
                         <h3  style='text-align:center' important>Booked By</h3>";
-                        $sql3 = "SELECT shipment.id AS shipmentID, carrierdetails.id, carrierdetails.name, carrierdetails.email, carrierdetails.address, carrierdetails.contact, carrierdetails.img_srcs
+                        $sql3 = "SELECT shipment.id AS shipmentID, carrierdetails.id as carrierID, carrierdetails.name, carrierdetails.email, carrierdetails.address, carrierdetails.contact, carrierdetails.img_srcs
                     FROM carrierdetails
                     INNER JOIN shipment ON carrierdetails.id = shipment.carrier_id
                     WHERE shipment.load_id = '$id'";
@@ -306,6 +308,7 @@
                                     <?php echo displayRating($loadrow['carrier_rating'], $loadrow['num_reviews']); ?>
                                 </li>
                                 <?php
+                                echo '<a href="view_review.php?carrier_id=' . $rowShip["carrierID"] . '" class="review-list-link">View Profile and Reviews</a>';
                                 echo '<li>Name: ' . $rowShip["name"] . '</li>';
                                 echo '<li>Email: ' . $rowShip["email"] . '</li>';
                                 echo '<li>Address: ' . $rowShip["address"] . '</li>';
@@ -322,14 +325,15 @@
                                         </form>";
                                 } else {
                                     // Code to give rating and review for consignor
-                                    $oldReviews = checkOldReviews($conn, $shipment_id);
-                                    $alreadyReviewed = false;
+                                    $oldReviews = checkOldReviews($conn, $rowShip["shipmentID"]);
+                                    $alreadyReviewed = !empty($oldReviews);
                                     foreach ($oldReviews as $review) {
                                         if ($review['shipment_id'] == $shipment_id && $review['reviewer_type'] == $_SESSION['usertype']) {
                                             $alreadyReviewed = true;
                                             break;
                                         }
                                     }
+                                    
                                     if (!$alreadyReviewed) {
                                         echo '
                                         <form method="POST" action="" class="review-form">
