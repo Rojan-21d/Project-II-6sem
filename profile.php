@@ -1,12 +1,10 @@
 <?php
-// Start session if not already started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
 $errors = [];
 
-// Redirect to login if user is not authenticated
 if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit;
