@@ -33,34 +33,7 @@
             window.location.href = '../home.php';
         });
     </script>";
-    }
-    function checkOldReviews($conn, $shipment_id) {
-        $shipmentId = $shipment_id;
-        $reviewerType = $_SESSION['usertype'];  // 'consignor'
-        $sql = 'SELECT id, shipment_id, reviewer_type, rating, review, created_at 
-                FROM reviews 
-                WHERE shipment_id = ? AND reviewer_type = ?';  // Filter by reviewer_type as well
-    
-        if ($stmt = $conn->prepare($sql)) {
-            $stmt->bind_param('is', $shipmentId, $reviewerType);  // Bind 'i' for shipment_id (int) and 's' for reviewer_type (string)
-            $stmt->execute();
-            $stmt->bind_result($id, $shipment_id, $reviewer_type, $rating, $review, $created_at);
-            $reviews = [];
-            while ($stmt->fetch()) {
-                $reviews[] = [
-                    'shipment_id' => $shipment_id,
-                    'reviewer_type' => $reviewer_type,
-                    'rating' => $rating,
-                    'review' => $review,
-                    'created_at' => $created_at,
-                ];
-            }
-            return $reviews;
-        } else {
-            return false;
-        }
-    }
-    
+    }    
     if (isset($_POST['action']) && isset($_POST['id'])) {
         $id = $_POST['id'];
         $_SESSION['load_id'] = $id;
@@ -185,68 +158,13 @@
                             if ($rowShip === null) {
                                 echo "No booking information available.";
                             } else {
-                                $sql_consignor_rating = "SELECT AVG(rating) AS avg_rating, COUNT(*) AS num_reviews
-                                FROM reviews
-                                WHERE shipment_id IN (
-                                    SELECT id 
-                                    FROM shipment 
-                                    WHERE consignor_id = (SELECT consignor_id FROM loaddetails WHERE id = ?)
-                                ) 
-                                AND reviews.reviewer_type = 'carrier';
-                                ";
-                                $stmt = $conn->prepare($sql_consignor_rating);
-                                $stmt->bind_param("i", $id);
-                                $stmt->execute();
-                                $result_consignor = $stmt->get_result();
-                                $consignor_rating = $result_consignor->fetch_assoc();
-                                $loadrow['consignor_rating'] = $consignor_rating['avg_rating'] ?? 0;
-                                $loadrow['num_reviews'] = $consignor_rating['num_reviews'] ?? 0;
                                 echo '<ul>';
                                 echo '<li style="text-align:center" important><img src="../' . $rowShip["img_srcs"] . '" style="height: 85px; width: auto;"></li>';
-                                ?>
-                                <li>
-                                    <?php echo displayRating($loadrow['consignor_rating'], $loadrow['num_reviews']); ?>
-                                </li>
-                                <?php
-                                echo '<a href="view_review.php?consignor_id=' . $rowShip["consignorID"] . '" class="review-list-link">View Profile and Reviews</a>';
                                 echo '<li>Name: ' . $rowShip["name"] . '</li>';
                                 echo '<li>Email: ' . $rowShip["email"] . '</li>';
                                 echo '<li>Address: ' . $rowShip["address"] . '</li>';
                                 echo '<li>Contact: ' . $rowShip["contact"] . '</li>';
                                 echo '</ul>';
-                                if ($stat == 'delivered') {
-                                    // Fetch old reviews for the current shipment
-                                    $oldReviews = checkOldReviews($conn, $shipment_id);
-                                    $alreadyReviewed = false;
-                                    foreach ($oldReviews as $review) {
-                                        if ($review['shipment_id'] == $shipment_id && $review['reviewer_type'] == $_SESSION['usertype']) {
-                                            $alreadyReviewed = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!$alreadyReviewed) {
-                                        echo "<p class='delivered-dis'>Delivered</p>";
-                                        echo '
-                                        <form method="POST" action="" class="review-form">
-                                            <div id="star-rating">
-                                                <span class="star" data-value="1">&#9733;</span>
-                                                <span class="star" data-value="2">&#9733;</span>
-                                                <span class="star" data-value="3">&#9733;</span>
-                                                <span class="star" data-value="4">&#9733;</span>
-                                                <span class="star" data-value="5">&#9733;</span>
-                                            </div>
-                                            <input type="hidden" name="rating" id="rating" value="0">
-                                            <br>
-                                            <textarea name="review" placeholder="Write your review here (Optional)..." rows="4" cols="50"></textarea>
-                                            <br>
-                                            <input type="hidden" name="shipment_id" value="' . $shipment_id . '">
-                                            <button type="submit" name="submitReview" class="review_button">Submit Review</button>
-                                        </form>
-                                    ';
-                                    } else {
-                                        echo "<p class='delivered-dis'>You have already reviewed this shipment.</p>";
-                                    }
-                                }
                             }
                             echo "</div>";
                         }
@@ -267,6 +185,8 @@
                                 <button type='submit'>Delivered</button>
                             </form>
                         </div>";
+                    } else {
+                        echo "<p style='color: green; text-align: center;'>Delivered</p>";
                     }
                     echo "</div>";
                 } elseif ($_SESSION['usertype'] == "consignor") {
@@ -287,28 +207,8 @@
                             if ($rowShip === null) {
                                 echo "No booking information available.";
                             } else {
-                                $sql_carrier_rating = "SELECT AVG(rating) AS avg_rating, COUNT(*) AS num_reviews 
-                                                    FROM reviews 
-                                                    WHERE shipment_id IN (SELECT id FROM shipment WHERE carrier_id = (SELECT carrier_id FROM loaddetails WHERE id = ?))
-                                                    AND reviews.reviewer_type = 'consignor'";
-                        
-                                $stmt = $conn->prepare($sql_carrier_rating);
-                                $stmt->bind_param("i", $id);
-                                $stmt->execute();
-                                $result_carrier = $stmt->get_result();
-                                $carrier_rating = $result_carrier->fetch_assoc();
-                                $loadrow['carrier_rating'] = $carrier_rating['avg_rating'] ?? 0;
-                                $loadrow['num_reviews'] = $carrier_rating['num_reviews'] ?? 0;
-                        
                                 echo '<ul>';
                                 echo '<li style="text-align:center" important><img src="../' . $rowShip["img_srcs"] . '" style="height: 85px; width: auto;"></li>';
-                                ?>
-                                <li>
-                                    <!-- Display ratings  -->
-                                    <?php echo displayRating($loadrow['carrier_rating'], $loadrow['num_reviews']); ?>
-                                </li>
-                                <?php
-                                echo '<a href="view_review.php?carrier_id=' . $rowShip["carrierID"] . '" class="review-list-link">View Profile and Reviews</a>';
                                 echo '<li>Name: ' . $rowShip["name"] . '</li>';
                                 echo '<li>Email: ' . $rowShip["email"] . '</li>';
                                 echo '<li>Address: ' . $rowShip["address"] . '</li>';
@@ -324,37 +224,7 @@
                                             <button type='submit' name='cancel'>Cancel</button>
                                         </form>";
                                 } else {
-                                    // Code to give rating and review for consignor
-                                    $oldReviews = checkOldReviews($conn, $rowShip["shipmentID"]);
-                                    $alreadyReviewed = !empty($oldReviews);
-                                    foreach ($oldReviews as $review) {
-                                        if ($review['shipment_id'] == $shipment_id && $review['reviewer_type'] == $_SESSION['usertype']) {
-                                            $alreadyReviewed = true;
-                                            break;
-                                        }
-                                    }
-                                    
-                                    if (!$alreadyReviewed) {
-                                        echo '
-                                        <form method="POST" action="" class="review-form">
-                                            <div id="star-rating">
-                                                <span class="star" data-value="1">&#9733;</span>
-                                                <span class="star" data-value="2">&#9733;</span>
-                                                <span class="star" data-value="3">&#9733;</span>
-                                                <span class="star" data-value="4">&#9733;</span>
-                                                <span class="star" data-value="5">&#9733;</span>
-                                            </div>
-                                            <input type="hidden" name="rating" id="rating" value="0">
-                                            <br>
-                                            <textarea name="review" placeholder="Write your review here (Optional) ..." rows="4" cols="50"></textarea>
-                                            <br>                                    
-                                            <input type="hidden" name="shipment_id" value="' . $rowShip["shipmentID"] . '">
-                                            <button type="submit" name="submitReview" class="review_button">Submit Review</button>
-                                        </form>
-                                        ';
-                                    } else {
-                                        echo "<p class='delivered-dis'>You have already reviewed this shipment.</p>";
-                                    }
+                                    echo "<p style='color: green; text-align: center;'>Delivered</p>";
                                 }
                                 echo "</div>";
                             }
@@ -387,40 +257,8 @@
             <?php
         }
     }
-    if (isset($_POST['submitReview'])) {
-        $shipmentId = $_POST['shipment_id'];
-        $rating = $_POST['rating'];
-        $review = $_POST['review'];
-        $errorMessages = [];
-
-        if (empty($shipmentId)) {
-            $errorMessages[] = "Shipment ID is required.";
-        }
-        if (empty($rating)) {
-            $errorMessages[] = "Rating is required.";
-        }
-        if (empty($review)) {
-            $errorMessages[] = "Review is required.";
-        }
-        
-        if (!empty($errorMessages)) {
-            showAlert(implode('<br>', $errorMessages), "error");
-        } else {
-            $stmt = $conn->prepare("INSERT INTO reviews (shipment_id, reviewer_type, rating, review) VALUES (?, ?, ?, ?)");
-
-            $stmt->bind_param("isss", $shipmentId, $_SESSION['usertype'], $rating, $review);
-
-            if ($stmt->execute()) {
-                showAlert("Your review has been submitted.", "success");
-            } else {
-                showAlert("There was an error submitting your review.", "error");
-            }
-            $stmt->close();
-        }
-    }
     include '../layout/footer.php';
     ?>
     <script src="../js/confirmationSA.js"></script>
-    <script src="../js/review_stars.js"></script>
 </body>
 </html>

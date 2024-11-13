@@ -10,34 +10,15 @@ if (!isset($_SESSION['email'])) {
     exit;
 }
 
-include(dirname(__DIR__) . '/backend/display_rating.php');
-
 $carrier_id = $_SESSION['id'];
 
-$history_query = "SELECT ld.* FROM shipment s 
-                  JOIN loaddetails ld ON s.load_id = ld.id 
-                  WHERE s.carrier_id = $carrier_id";
-$history_result = $conn->query($history_query);
-
-if ($history_result->num_rows > 0) {
-    $sql = "SELECT ld.*, cd.name AS consignor_name, cd.img_srcs AS consignor_img, cd.email AS consignor_email, 
-            COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
-        FROM loaddetails ld
-        JOIN consignordetails cd ON ld.consignor_id = cd.id
-        LEFT JOIN shipment s ON s.consignor_id = cd.id
-        LEFT JOIN reviews r ON s.id = r.shipment_id
-        WHERE ld.status = 'notBooked'
-        GROUP BY ld.id, cd.name, cd.img_srcs, cd.email";
-} else {
-    $sql = "SELECT ld.*, cd.name AS consignor_name, cd.img_srcs AS consignor_img, cd.email AS consignor_email,
-                   COALESCE(AVG(r.rating), 0) AS consignor_rating, COUNT(r.id) AS num_reviews
-            FROM loaddetails ld
-            JOIN consignordetails cd ON ld.consignor_id = cd.id
-            LEFT JOIN shipment s ON ld.id = s.load_id
-            LEFT JOIN reviews r ON s.id = r.shipment_id
-            WHERE ld.status = 'notBooked'
-            GROUP BY ld.id, cd.name, cd.img_srcs, cd.email";
-}
+$sql = "SELECT ld.*, cd.name AS consignor_name, cd.img_srcs AS consignor_img, cd.email AS consignor_email
+    FROM loaddetails ld
+    JOIN consignordetails cd ON ld.consignor_id = cd.id
+    LEFT JOIN shipment s ON ld.id = s.load_id
+    WHERE ld.status = 'notBooked'
+    GROUP BY ld.id, cd.name, cd.img_srcs, cd.email;
+";
 
 $result = $conn->query($sql);
 ?>
@@ -68,12 +49,6 @@ $result = $conn->query($sql);
                                     <small>' . $loadrow['dateofpost'] . '</small>
                                 </div>
                             </div>
-                            <div style="float: right;">';
-                                
-                                // Call displayRating function to show consignor rating and reviews
-                                echo displayRating($loadrow['consignor_rating'], $loadrow['num_reviews']);
-
-                            echo '</div>
                         </div>
                         <hr>
                         
