@@ -21,7 +21,11 @@ if(!isset($_SESSION['username'])){
     <a href="adminpanel.php">
         <img class="logo" src="../img/defaultImg/mainLogo2.png" alt="Logo">
     </a>
-    <a href="logout.php">Logout</a>
+    <div class="mid">
+        <a href="viewpricingconfig.php" class="price-config">Price Configuration</a>
+        <a href="weightclasspricing.php" class="weight-class">Weight Class</a>
+        <a href="logout.php" class="logout-btn">Logout</a>
+    </div>
 </nav>
 </body>
 </html>

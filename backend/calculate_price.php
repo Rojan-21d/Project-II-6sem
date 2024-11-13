@@ -3,9 +3,9 @@
 require 'databaseconnection.php'; 
 
 function calculateDynamicPrice($db, $distance, $weight, $scheduled_time) {
-    // Initialize pricing configuration array
+    // Initialize config
     $config = [];
-    // Fetch pricing configuration from the database
+    // Fetch pricing configuration
     $result = $db->query("SELECT config_name, config_value FROM pricing_config");
     if ($result === false) {
         showAlert("Error fetching pricing configuration: " . $db->error, 'error');
@@ -16,7 +16,7 @@ function calculateDynamicPrice($db, $distance, $weight, $scheduled_time) {
         $config[$row['config_name']] = $row['config_value'];
     }
 
-    // Get base price for the weight class
+    // Get base price
     $result = $db->query("SELECT base_price_min, base_price_max FROM weight_class_pricing WHERE min_weight <= $weight AND max_weight >= $weight");
     if ($result === false) {
         showAlert("Error fetching weight class pricing: " . $db->error, 'error');
@@ -39,7 +39,7 @@ function calculateDynamicPrice($db, $distance, $weight, $scheduled_time) {
     // Calculate urgency factor based on the scheduled time
     $currentTimestamp = time();
     $scheduledTimestamp = strtotime($scheduled_time);
-    $hoursRemaining = ($scheduledTimestamp - $currentTimestamp) / 3600; // hours remaining
+    $hoursRemaining = ($scheduledTimestamp - $currentTimestamp) / 3600; 
 
     // Calculate expected travel hours for 400 km/day and 1200 km/day
     $expectedTravelHours400 = ($distance / $averageKmPerDaySingle) * 24;
@@ -51,9 +51,10 @@ function calculateDynamicPrice($db, $distance, $weight, $scheduled_time) {
         return null;
     }
 
+    $buffer = 1;
     $urgencyFactor = 0;
-    if ($hoursRemaining < $expectedTravelHours400 && $hoursRemaining > $expectedTravelHours1200) {
-        // Apply urgency factor only if time is shorter than 400 km/day expectation, but not below 1200 km/day expectation
+    if ($hoursRemaining < ($expectedTravelHours400 + $buffer) && $hoursRemaining > $expectedTravelHours1200) {
+        // Apply urgency factor only if time is shorter than 400 km/day expectation with one hour buffer, but not below 1200 km/day expectation
         $urgencyFactor = max(0, $urgencyFactorRate * (($expectedTravelHours400 - $hoursRemaining) / 24));
     }
 

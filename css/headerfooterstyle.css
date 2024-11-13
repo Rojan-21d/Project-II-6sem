@@ -153,3 +153,44 @@ footer {
     text-decoration: none;
     color: #fff;
 }
+
+/* General button styles */
+.price-config, .weight-class, .logout-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #4CAF50; /* Green background for Price Configuration and Weight Class */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Hover effect */
+.price-config:hover, .weight-class:hover, .logout-btn:hover {
+    background-color: #45a049; /* Darker green on hover for Price Configuration and Weight Class */
+    transform: translateY(-3px); /* Slightly lift the button */
+}
+
+/* Active (pressed) state */
+.price-config:active, .weight-class:active, .logout-btn:active {
+    background-color: #3e8e41; /* Even darker green on click for Price Configuration and Weight Class */
+    transform: translateY(0); /* Button returns to normal position */
+}
+
+/* Specific styling for logout button */
+.logout-btn {
+    background-color: #f44336; /* Red background for logout */
+}
+
+/* Hover effect for logout button */
+.logout-btn:hover {
+    background-color: #e53935; /* Darker red on hover */
+}
+
+/* Active state for logout button */
+.logout-btn:active {
+    background-color: #d32f2f; /* Even darker red on click */
+}

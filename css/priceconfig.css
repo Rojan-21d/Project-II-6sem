@@ -1,0 +1,80 @@
+/* Body styling */
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #292929; /* Dark background */
+    color: #fff; /* Default text color */
+}
+
+/* Header styling */
+h1 {
+    color: #ffffff;
+    margin-bottom: 20px; /* Adds spacing between the heading and content */
+}
+
+/* Flexbox layout for header with Home button */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px; /* Adds space between table and form */
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #555; /* Slightly darker border */
+    color: #ffffff;
+    text-align: left; /* Aligns text to the left for better readability */
+}
+
+th {
+    background-color: #444; /* Darker header background */
+}
+
+input[type="number"] {
+    width: 150px; /* Increased width for better user experience */
+    padding: 5px;
+    background-color: #444; /* Dark background for inputs */
+    border: 1px solid #555;
+    color: #fff; /* White text for input fields */
+}
+
+/* Home button styling */
+.home-button {
+    text-decoration: none;
+    background-color: #01896e;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: #45a049;
+}
+
+/* Submit button styling */
+button {
+    margin-top: 10px;
+    background-color: #01896e;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
